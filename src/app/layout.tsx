@@ -6,6 +6,7 @@ import { TRPCReactProvider } from "~/trpc/react";
 import {
   ClerkProvider
 } from '@clerk/nextjs'
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Git AI",
@@ -26,6 +27,7 @@ export default function RootLayout({
     <html lang="en" className={`${geist.variable}`}>
       <body>
         <TRPCReactProvider>{children}</TRPCReactProvider>
+        <Toaster />
       </body>
     </html>
     </ClerkProvider>
