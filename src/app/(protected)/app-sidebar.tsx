@@ -51,6 +51,7 @@ const projects = [
 export function AppSidebar() {
   const pathname = usePathname();
   const {projects,projectId,setProjectId} = useProject();
+  console.log(projects, projectId);
 
   return (
     <Sidebar collapsible="icon" variant="floating">
@@ -97,11 +98,11 @@ export function AppSidebar() {
               {projects?.map((project) => (
                 <SidebarMenuItem key={project.name}>
                   <SidebarMenuButton asChild>
-                    <div onClick={() => setProjectId(project.id)}>
+                    <div onClick={() => {setProjectId(project.id)}}>
                       <div
                         className={cn(
                           "text-primary flex size-6 items-center justify-center rounded-sm border bg-white text-sm",
-                          { "bg-primary text-white": false },
+                          { "bg-primary text-white": project.id == projectId },
                         )}
                       >
                         {project.name[0]}

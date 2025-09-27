@@ -1,12 +1,53 @@
-'use client'
-import { useUser } from '@clerk/nextjs';
-import React from 'react'
+"use client";
+import { useUser } from "@clerk/nextjs";
+import { ExternalLink, Github } from "lucide-react";
+import Link from "next/link";
+import React from "react";
+import useProject from "~/hooks/use-project";
 
 const DashboardPage = () => {
-    const {user} = useUser();
+  const { project } = useProject();
   return (
-    <div>{user?.firstName}</div>
-  )
-}
+    <div>
+      {project?.id}
+      <div className="flex items-center justify-between flex-wrap gap-y-4">
 
-export default DashboardPage
+        <div className="w-fit rounded-md bg-primary px-4 py-3">
+          <div className="flex items-center">
+          <Github className="size-5 text-white" />
+          <div className="ml-2">
+            <p className="text-sm text-white">This project is linked to {' '}
+              <Link href={project?.githubUrl ?? ''} target="_blank" className="font-medium underline flex">
+                {project?.githubUrl}
+                <ExternalLink className="ml-1 size-4" />
+              </Link>
+            </p>
+          </div>
+        </div>
+        </div>
+
+        <div className="h-4"></div>
+
+        <div className="flex items-center gap-4">
+          TeamMembers
+          InviteButton
+          ArchieveButton
+        </div>
+      </div>
+
+
+      <div className="mt-4">
+        <div className="grid grid-cols-1 gap-4 gsm:grid-cols-5">
+          AskQuestionCard 
+          Meeting card
+        </div>
+      </div>
+
+      <div className="mt-8">
+
+      </div>
+    </div>
+  );
+};
+
+export default DashboardPage;

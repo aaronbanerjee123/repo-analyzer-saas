@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { api } from "~/trpc/react";
+import useRefetch from './../../../hooks/use-refresh';
 
 type FormInput = {
   repoUrl: string;
@@ -15,6 +16,7 @@ type FormInput = {
 
 const CreatePage = () => {
   const createProject = api.project.createProject.useMutation();
+  const refetch = useRefetch();
   const onSubmit = (data: FormInput) => {
     createProject.mutate(
       {
@@ -25,6 +27,7 @@ const CreatePage = () => {
       {
         onSuccess: () => {
           toast.success("Project created successfully");
+          refetch();
           reset();
         },
         onError: (err) => {
