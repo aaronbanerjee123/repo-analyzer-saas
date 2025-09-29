@@ -1,5 +1,6 @@
 import {GoogleGenerativeAI} from '@google/generative-ai';
 import "dotenv/config";
+import {Document} from '@langchain/core/documents';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 const model = genAI.getGenerativeModel({
     model:'gemini-2.5-flash',
@@ -52,7 +53,7 @@ Provide a concise summary of the changes made in this commit. Focus on what was 
     }
 
     console.log('The AI response for commit summary:', aiResponse.response.text().trim());
-    
+
     return aiResponse.response.text().trim();
 
   } catch (error) {
@@ -63,4 +64,29 @@ Provide a concise summary of the changes made in this commit. Focus on what was 
     };
   }
 };
+export async function summariseCode(doc: Document) {
+  console.log("getting summary for", doc.metadata.source);
+  const code = doc.pageContent.slice(0, 10000); // Limit to 10000 characters
+  const response = await model.generateContent([
+    `You are an intelligent senior software engineer who specialises in onboarding junior software engineers onto projects.
+You are onboarding a junior software engineer and explaining to them the purpose of the ${doc.metadata.source} file.
+Here is the code:
+
+${code}
+
+Give a summary no more than 100 words of the code above.`,
+  ]);
+
+  return response.response.text();
+}
+
+export async function generateEmbedding(summary:string){
+  const model = genAI.getGenerativeModel({
+    model:"text-embedding-004"
+  })
+
+  const result = await model.embedContent(summary);
+  const embedding = result.embedding;
+  return embedding.values;
+}
 

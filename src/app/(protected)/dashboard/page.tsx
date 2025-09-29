@@ -1,9 +1,11 @@
 "use client";
-import { useUser } from "@clerk/nextjs";
 import { ExternalLink, Github } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import useProject from "~/hooks/use-project";
+import CommitLog from "./commit-log";
+import AskQuestionCard from "./ask-question-card";
+import MeetingCard from "./meeting-card";
 
 const DashboardPage = () => {
   const { project } = useProject();
@@ -37,14 +39,14 @@ const DashboardPage = () => {
 
 
       <div className="mt-4">
-        <div className="grid grid-cols-1 gap-4 gsm:grid-cols-5">
-          AskQuestionCard 
-          Meeting card
+        <div className="flex items-center justify-start gap-4">
+          <AskQuestionCard /> 
+          <MeetingCard />
         </div>
       </div>
 
       <div className="mt-8">
-
+        <CommitLog />
       </div>
     </div>
   );
