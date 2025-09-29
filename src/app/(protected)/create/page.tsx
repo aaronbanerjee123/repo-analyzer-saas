@@ -7,6 +7,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { api } from "~/trpc/react";
 import useRefetch from './../../../hooks/use-refresh';
+import { deleteAll } from "~/lib/deleteAll";
 
 type FormInput = {
   repoUrl: string;
@@ -14,7 +15,7 @@ type FormInput = {
   githubToken?: string;
 };
 
-const CreatePage = () => {
+const CreatePage =  () => {
   const createProject = api.project.createProject.useMutation();
   const refetch = useRefetch();
   const onSubmit = (data: FormInput) => {
@@ -38,7 +39,7 @@ const CreatePage = () => {
     return true;
   };
   const { register, handleSubmit, reset } = useForm<FormInput>();
-  return (
+return (
     <div className="flex h-full items-center justify-center gap-12">
       <img src="/programmer.svg" alt="programmer" className="h-32" />
       <div>
