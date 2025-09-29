@@ -1,5 +1,5 @@
 import {GoogleGenerativeAI} from '@google/generative-ai';
-import "dotenv/config";
+// import "dotenv/config";
 import {Document} from '@langchain/core/documents';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 const model = genAI.getGenerativeModel({

@@ -10,14 +10,34 @@ import {
 import { Textarea } from "~/components/ui/textarea";
 import useProject from "~/hooks/use-project";
 import { Github } from "lucide-react";
+import { askQuestion } from "./actions";
+import { readStreamableValue } from "@ai-sdk/rsc";
 
 const AskQuestionCard = () => {
   const { project } = useProject();
   const [question, setQuestion] = React.useState("");
   const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [fileReferences, setFileReferences] =
+    React.useState<
+      { fileName: string; sourceCode: string; summary: string }[]
+    >();
+  const [answer, setAnswer] = React.useState("");
   const onSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    if (!project?.id) return; 
     setOpen(true);
+    const { output, fileReferences:fileRefs } = await askQuestion(question, project.id);
+    setFileReferences(fileRefs);
+
+    for await (const delta of readStreamableValue(output)) {
+      if (delta) {
+        setAnswer((ans) => ans + delta);
+      }
+    }
+
+    setLoading(false);
   };
   return (
     <>
@@ -30,10 +50,15 @@ const AskQuestionCard = () => {
             <Github className="size-5 text-black" />
             <DialogTitle>Ask a question</DialogTitle>
           </DialogHeader>
+          {answer}
+          <h1>File references</h1>
+            {fileReferences?.map(file => {
+                return <span>{file.fileName}</span>
+            })}
         </DialogContent>
       </Dialog>
 
-<Card className="h-[250px] w-full">
+      <Card className="h-[250px] w-full">
         <CardHeader>
           <CardTitle>Ask a Question</CardTitle>
         </CardHeader>
