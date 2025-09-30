@@ -25,10 +25,10 @@ export const projectRouter = createTRPCRouter({
           },
         },
       });
-     indexGithubRepo(project.id,input.githubUrl,input.githubToken)
-     .then(() => console.log('Indexing complete'))
-     .catch(console.error);
-     
+      indexGithubRepo(project.id, input.githubUrl, input.githubToken)
+        .then(() => console.log("Indexing complete"))
+        .catch(console.error);
+
       await pollCommits(project.id);
       return project;
     }),
@@ -40,14 +40,58 @@ export const projectRouter = createTRPCRouter({
       },
     });
   }),
-  getCommits: protectedProcedure.input(z.object({
-    projectId: z.string()
-  })).query(async ({ ctx, input }) => {
-    pollCommits(input.projectId).then().catch(console.error);
-    return await ctx.db.commit.findMany({
-      where: {
-        projectId: input.projectId
-      }
-    });
-  })
+  getCommits: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      pollCommits(input.projectId).then().catch(console.error);
+      return await ctx.db.commit.findMany({
+        where: {
+          projectId: input.projectId,
+        },
+      });
+    }),
+
+  saveAnswer: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+        question: z.string(),
+        fileReferences: z.any(),
+        answer: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.question.create({
+        data: {
+          answer: input.answer,
+          fileReferences: input.filesReferences,
+          projectId: input.projectId,
+          question: input.question,
+          userId: ctx.userId!,
+        },
+      });
+    }),
+
+  getQuestions: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+      }),
+    ).query(async ({ ctx, input }) => {
+      return await ctx.db.question.findMany({
+        where: {
+          projectId: input.projectId,
+        },
+        include: {
+          user: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+    }),
 });
