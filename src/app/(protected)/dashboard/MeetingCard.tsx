@@ -1,22 +1,15 @@
 'use client'
-import {CircularProgressbar, buildStyles} from 'react-circular-progressbar';
+
 import { Presentation, Upload } from 'lucide-react'
 import React from 'react'
 import {useDropzone} from 'react-dropzone'
 import { Button } from '~/components/ui/button'
 import { Card } from '~/components/ui/card'
 import { uploadFile } from '~/lib/firebase'
-import { api } from '~/trpc/react';
-import useProject from '~/hooks/use-project';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
 
 const MeetingCard = () => {
     const [isUploading, setIsUploading] = React.useState(false);
     const [progress, setProgress] = React.useState(0)
-    const uploadMeeting = api.project.uploadMeeting.useMutation();
-    const router = useRouter();
-    const {projectId} = useProject();
     const {getRootProps,getInputProps} = useDropzone({
         accept:{
             "audio/*": ['.mp3', '.wav','.m4a'],
@@ -25,25 +18,9 @@ const MeetingCard = () => {
          multiple:false,
          maxSize:50_000_000,
          onDrop: async (acceptedFiles) => {
-          setProgress(0);
-          setIsUploading(true);
             console.log(acceptedFiles)
             const file = acceptedFiles[0]
-            if(!file) return;
-            const downloadURL = await uploadFile(file,setProgress) as string
-            uploadMeeting.mutate({
-              projectId,
-              meetingUrl:downloadURL,
-              name:file.name
-            },{
-              onSuccess: () => {
-                toast.success("Meeting upload successfully")
-                router.push('/meetings')
-              },
-              onError: () => {
-                toast.error("Failed to upload meeting  ")
-              }
-            })
+            const downloadURL = await uploadFile(file,setProgress)
             setIsUploading(false);
          }
     })
@@ -61,7 +38,7 @@ const MeetingCard = () => {
           Powered by AI.
         </p>
         <div className="mt-6">
-          <Button disabled={isUploading}>
+          <Button disabled={isUploading} isLoading={isUploading}>
             <Upload className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
             Upload Meeting
             <input className="hidden" {...getInputProps()} />
@@ -69,17 +46,7 @@ const MeetingCard = () => {
         </div>
       </>
     )}
-    {isUploading && (
-      <div className="flex justify-center">
-        <CircularProgressbar value={progress} text={`${progress}%`} className='size-20' styles={
-          buildStyles({
-            pathColor:'#000',
-            textColor:'#000'
-          })
-        }/>
-        <p className="text-sm text-gray-500 text-center">Uploading your meeting...</p>
-      </div>
-    )}
+    <div>MeetingCard</div>
     </Card>
 )
 }

@@ -16,6 +16,7 @@ import { readStreamableValue } from "@ai-sdk/rsc";
 import CodeReferences from "./code-references";
 import { api } from "~/trpc/react";
 import { toast } from "sonner";
+import useRefetch from "~/hooks/use-refresh";
 
 const AskQuestionCard = () => {
   const { project } = useProject();
