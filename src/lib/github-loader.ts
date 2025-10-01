@@ -70,7 +70,7 @@ export const indexGithubRepo = async(projectId:string, githubUrl:string, githubT
 const generateEmbeddings = async(docs:Document[]) => {
     return await Promise.all(docs.map(async doc => {
         const summary = await summariseCode(doc);
-        const embedding = await generateEmbedding(summary);
+        const embedding = await geneurateEmbedding(summary);
         return {
             summary,
             embedding,

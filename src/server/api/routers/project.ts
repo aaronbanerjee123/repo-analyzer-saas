@@ -2,7 +2,6 @@ import z from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { pollCommits } from "~/lib/github";
 import { indexGithubRepo } from "~/lib/github-loader";
-import { string } from "zod/v4";
 
 export const projectRouter = createTRPCRouter({
   createProject: protectedProcedure
@@ -69,7 +68,7 @@ export const projectRouter = createTRPCRouter({
       return await ctx.db.question.create({
         data: {
           answer: input.answer,
-          fileReferences: input.filesReferences,
+          fileReferences: input.fileReferences,
           projectId: input.projectId,
           question: input.question,
           userId: ctx.userId!,
@@ -106,8 +105,12 @@ export const projectRouter = createTRPCRouter({
           status:"PROCESSING"
         }
       })
+      return meeting
     }),
     getMeetings: protectedProcedure.input(z.object({projectId:z.string()})).query(async ({ctx,input}) => {
       return await ctx.db.meeting.findMany({where: {projectId:input.projectId}, include:{issues:true}})
-    })
+    }),
+    getMeetingById: protectedProcedure.input(z.object({meetingId:z.string()})).query(async({ctx,input}) => {
+      return await ctx.db.meeting.findUnique({where:{id:input.meetingId}, include:{issues:true}})
+    } )
 });
